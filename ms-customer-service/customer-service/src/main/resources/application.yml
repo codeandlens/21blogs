@@ -1,0 +1,29 @@
+spring:  service-name: customer-service
+  h2:
+    console:
+      enabled: true
+      path: /database-h2
+      settings: 
+        trace: false
+        web-allow-others: true
+  datasource:
+    url: jdbc:h2:./data/21BlogsData
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
+jwt:
+  secret: 21blogs
+
+message-broker:
+  url: "http://104.237.9.111:1000/prokeSubscribe"  url-retrive: "http://104.237.9.111:1000/checkingQueueAndRetrive"  

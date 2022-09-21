@@ -1,0 +1,42 @@
+server:
+  port : 8000
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /database-h2
+      settings: 
+        trace: false
+        web-allow-others: true
+  datasource:
+    url: jdbc:h2:./data/21BlogsData
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    show_sql: true
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+    spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
+
+service-token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NTY3ODkwIiwidXNlck5hbWUiOiJUZWVyYXNpbiBTYWhhc2FydCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTUxNjIzOTAyMn0.NoDp1ojX9Hln1OD1IpujC3_qQ1sfO3Lw8Ruww9WsN2s"      
+
+sync-events: create-customer
+      
+msg: 
+  service:
+    admin-service-event-receiver: "http://104.237.9.111:1006/api/event-receiver"
+    customer-service-event-receiver: "http://104.237.9.111:1003/api/event-receiver"
+    master-service-event-receiver: "http://104.237.9.111:1005/api/event-receiver"
+    authenticate-service-event-receiver: "http://104.237.9.111:9999/api/event-receiver"
+    report-service-event-receiver: "http://104.237.9.111:1008/api/event-receiver"
+
+ #   arrangement-service-event-receiver: "http://localhost:8007/api/event-receiver"
+ #   customer-service-event-receiver: "http://localhost:8004/api/event-receiver"
+ #   report-service-event-receiver: "http://localhost:8008/api/event-receiver"
+ #   invite-service-event-receiver: "http://localhost:8003/api/event-receiver"
+  

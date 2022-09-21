@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT-001" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a268d07c-d9b0-4632-9492-374e649379c4">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
+	<parameter name="dateFrom" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateTo" class="java.util.Date"/>
+	<parameter name="dateFromTh" class="java.lang.String"/>
+	<parameter name="dateToTh" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT BK.DOCTOR_NAME_TH,
+	BK.BRANCH_NAME,
+	APT.APPOINTMENT_TYPE_NAME_TH,
+	COUNT(BK.ID) AS BOOKING_AMOUNT
+FROM BOOKING BK
+	INNER JOIN APPOINTMENT APT ON BK.APPOINTMENT_TYPE = APT.APPOINTMENT_TYPE
+	INNER JOIN DOCTOR DR ON BK.DOCTOR_ID = DR.DOCTOR_SEQ
+WHERE BOOKING_DATE >=  COALESCE($P{dateFrom},BOOKING_DATE)
+  AND BOOKING_DATE <= COALESCE($P{dateTo},BOOKING_DATE)
+GROUP BY BK.DOCTOR_NAME_TH,BK.BRANCH_NAME,APT.APPOINTMENT_TYPE
+ORDER BY DR.DOCTOR_SEQ,BK.BRANCH_ID;]]>
+	</queryString>
+	<field name="DOCTOR_NAME_TH" class="java.lang.String"/>
+	<field name="BRANCH_NAME" class="java.lang.String"/>
+	<field name="APPOINTMENT_TYPE_NAME_TH" class="java.lang.String"/>
+	<field name="BOOKING_AMOUNT" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="31" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="372" height="20" uuid="13c86836-432d-4e9a-a81b-15ac3e1df093"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["รายงานสรุปการจองหมอในแต่ละสาขาประจำวันที่"]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="600" y="0" width="118" height="20" isPrintWhenDetailOverflows="true" uuid="f12bc6e6-c8c6-4aab-8d13-b26e8ce96f31"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateToTh}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="372" y="0" width="134" height="20" isPrintWhenDetailOverflows="true" uuid="bdc25dcd-3bae-4a52-9c6e-9b3666a94b7c"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateFromTh}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="506" y="0" width="94" height="20" uuid="f4d31f9f-15a5-4804-9e0b-8029b81916f5"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ถึงวันที่"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="236" height="20" forecolor="#FFFFFF" backcolor="#FF9999" uuid="67d653d8-32f6-4a20-b66d-379f7674ddb5"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[หมอ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="236" y="0" width="207" height="20" forecolor="#FFFFFF" backcolor="#FF9999" uuid="79c7e569-98d9-4d63-8617-74b239b41c5d"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[สาขา]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="443" y="0" width="241" height="20" forecolor="#FFFFFF" backcolor="#FF9999" uuid="3dde2593-10fd-4004-92a0-01b95a74760b"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[ประเภทการบริการ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="684" y="0" width="118" height="20" forecolor="#FFFFFF" backcolor="#FF9999" uuid="96bbf4ee-f3e6-4fd3-ac36-87a1c54ec32b"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[จำนวนการจอง]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Immediate">
+			<printWhenExpression><![CDATA[true]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="236" height="20" isPrintWhenDetailOverflows="true" uuid="80ffe8e7-7c7b-466c-a5a9-351a53bd8c8c"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DOCTOR_NAME_TH}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="236" y="0" width="207" height="20" isPrintWhenDetailOverflows="true" uuid="89cb0e3c-4f8c-49e7-8341-93d35c85e3ae"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BRANCH_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="443" y="0" width="241" height="20" isPrintWhenDetailOverflows="true" uuid="42f9ec6c-1c03-4d7e-872a-f3133f45bfdc"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{APPOINTMENT_TYPE_NAME_TH}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="684" y="0" width="118" height="20" isPrintWhenDetailOverflows="true" uuid="ec229054-7dcf-4add-8d85-ba2916d11d5b"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10" rightIndent="10" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BOOKING_AMOUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band/>
+	</summary>
+	<noData>
+		<band height="70">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="50" width="802" height="20" backcolor="#FFFFFF" uuid="bcf7ce6a-9999-4c1e-a931-f3b9607aa34d"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[ไม่พบข้อมูล]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="684" y="30" width="118" height="20" forecolor="#FFFFFF" backcolor="#FF9999" uuid="f4569a45-15c4-4d3b-9b60-55d64afad42c"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[จำนวนการจอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="443" y="30" width="241" height="20" forecolor="#FFFFFF" backcolor="#FF9999" uuid="a96f35ab-3fb2-4894-9e44-2fbac0401f35"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[ประเภทการบริการ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="236" y="30" width="207" height="20" forecolor="#FFFFFF" backcolor="#FF9999" uuid="a6c5bcaf-4e9b-426b-94ae-2a6b4c6ae16d"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[สาขา]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="30" width="236" height="20" forecolor="#FFFFFF" backcolor="#FF9999" uuid="0dcf1e72-fb58-4666-9be4-94eb4354be58"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[หมอ]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="372" y="0" width="134" height="20" isPrintWhenDetailOverflows="true" uuid="f422230d-6259-41b4-91fb-11c67312289d"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateFromTh}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="600" y="0" width="118" height="20" isPrintWhenDetailOverflows="true" uuid="533db1a0-252e-40b6-9d01-bde883c9a1a7"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateToTh}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="506" y="0" width="94" height="20" uuid="fdfad88c-2a8b-43f8-98c1-35d7d80262c3"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ถึงวันที่"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="372" height="20" uuid="5a019991-f7bb-406e-bcd3-33a0190671ac"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["รายงานสรุปการจองหมอในแต่ละสาขาประจำวันที่"]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

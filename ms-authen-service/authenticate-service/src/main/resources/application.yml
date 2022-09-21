@@ -1,0 +1,37 @@
+server:
+  port : 8085
+spring:
+  service-name: authenticate-service
+  h2:
+    console:
+      enabled: true
+      path: /database-h2
+      settings: 
+        trace: false
+        web-allow-others: true
+  datasource:
+    url: jdbc:h2:./data/21BlogsData
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    show_sql: true
+    hibernate:
+      ddl-auto: update
+    spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
+jwt:
+  secret: 21blogs
+
+message-broker:
+  url: "http://104.237.9.111:1000/prokeSubscribe"
+  url-retrive: "http://104.237.9.111:1000/checkingQueueAndRetrive"
+#  url-retrive: "http://localhost:8000/checkingQueueAndRetrive"
+
+program-config:
+  timezone: "Asia/Bangkok"
+  time-tolerance: 5
+  time-gap: 30
+  payment-validate-time-tolerance: 15

@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT-006" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0757d4cc-9e45-4a20-b420-0df4118e9e72">
+	<property name="ireport.zoom" value="1.4641000000000033"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="dateFrom" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateTo" class="java.util.Date"/>
+	<parameter name="branchId" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+    DR.GENDER ,
+	BK.DOCTOR_NAME_TH ,
+	CUST.FIRST_NAME,
+	CUST.LAST_NAME,
+	CUST.TEL_NO,
+	CUST.TEL_NO_EXT,
+	BK.BOOKING_DATE,
+	APT.APPOINTMENT_TYPE_NAME_TH,
+	BK.BRANCH_NAME
+FROM
+	BOOKING BK
+	INNER JOIN CUSTOMER_DETAIL CUST ON BK.CUSTOMER_ID = CUST.ID
+	INNER JOIN APPOINTMENT APT ON BK.APPOINTMENT_TYPE = APT.APPOINTMENT_TYPE
+	INNER JOIN DOCTOR DR ON BK.DOCTOR_ID = DR.ID
+	WHERE
+	BK.BOOKING_STATUS = 'CONFIRMED'
+	AND BOOKING_DATE >= COALESCE($P{dateFrom},BK.BOOKING_DATE)
+	AND BOOKING_DATE <= COALESCE($P{dateTo},BK.BOOKING_DATE)
+	AND ($P{branchId} is null or BK.BRANCH_ID = $P{branchId})
+ORDER BY
+	BK.BOOKING_DATE,
+	BK.BRANCH_NAME,
+	DR.DOCTOR_SEQ]]>
+	</queryString>
+	<field name="GENDER" class="java.lang.String"/>
+	<field name="DOCTOR_NAME_TH" class="java.lang.String"/>
+	<field name="FIRST_NAME" class="java.lang.String"/>
+	<field name="LAST_NAME" class="java.lang.String"/>
+	<field name="TEL_NO" class="java.lang.String"/>
+	<field name="TEL_NO_EXT" class="java.lang.String"/>
+	<field name="BOOKING_DATE" class="java.util.Date"/>
+	<field name="APPOINTMENT_TYPE_NAME_TH" class="java.lang.String"/>
+	<field name="BRANCH_NAME" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="30" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="352" height="30" isPrintWhenDetailOverflows="true" uuid="13c86836-432d-4e9a-a81b-15ac3e1df093">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["รายการเข้ารับบริการตั้งแต่วันที่"]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="509" y="0" width="91" height="24" isPrintWhenDetailOverflows="true" uuid="f12bc6e6-c8c6-4aab-8d13-b26e8ce96f31">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy", new Locale("th","TH")).format($P{dateTo})]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="352" y="0" width="89" height="24" isPrintWhenDetailOverflows="true" uuid="bdc25dcd-3bae-4a52-9c6e-9b3666a94b7c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy", new Locale("th","TH")).format($P{dateFrom})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="441" y="0" width="68" height="30" isPrintWhenDetailOverflows="true" uuid="f4d31f9f-15a5-4804-9e0b-8029b81916f5"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ถึงวันที่"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="29">
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="45" y="5" width="165" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="668ecd19-46b0-462c-b9a5-a75d9c82fe0e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0"/>
+				</textElement>
+				<text><![CDATA[ชื่อแพทย์]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="5" width="45" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="31aa5c60-ba1e-49e7-9af9-9a2b53a56a0e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0"/>
+				</textElement>
+				<text><![CDATA[ลำดับที่]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="480" y="5" width="90" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="e417d639-9a64-4dd4-8f20-630f27f5db48">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="0"/>
+				</textElement>
+				<text><![CDATA[วันที่เข้ารับบริการ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="570" y="5" width="110" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="91f391e1-08b7-41cc-a13c-088638f700c2">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="0"/>
+				</textElement>
+				<text><![CDATA[ประเภทการจอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="680" y="5" width="120" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="8de48faa-0a8b-4a5e-a878-635f0cdf2d26">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="0"/>
+				</textElement>
+				<text><![CDATA[สาขาที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="370" y="5" width="110" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="aa2ce0f4-0d0d-4222-9fe6-fee7f7c0e970">
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0"/>
+				</textElement>
+				<text><![CDATA[เบอร์โทร]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="210" y="5" width="160" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="874b9cbe-654c-449e-a67a-a1cba34930f2">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0"/>
+				</textElement>
+				<text><![CDATA[ชื่อลูกค้า]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Immediate">
+			<printWhenExpression><![CDATA[true]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="210" y="0" width="160" height="24" isPrintWhenDetailOverflows="true" uuid="89cb0e3c-4f8c-49e7-8341-93d35c85e3ae">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME}+"  "+$F{LAST_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="370" y="0" width="110" height="24" isPrintWhenDetailOverflows="true" uuid="42f9ec6c-1c03-4d7e-872a-f3133f45bfdc">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{TEL_NO}+(($F{TEL_NO_EXT}!=null)?" ต่อ "+$F{TEL_NO_EXT}:""))]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="570" y="0" width="110" height="24" isPrintWhenDetailOverflows="true" uuid="ec229054-7dcf-4add-8d85-ba2916d11d5b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="0"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{APPOINTMENT_TYPE_NAME_TH}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="45" height="24" isPrintWhenDetailOverflows="true" uuid="a5b5f893-727e-4e7e-88d6-41b2cb41b2ad">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="480" y="0" width="90" height="24" isPrintWhenDetailOverflows="true" uuid="5241232d-78c4-4cb3-ae9c-04df13c25a87">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[((($F{BOOKING_DATE}!=null)?new java.text.SimpleDateFormat("dd/MM/yyyy", new Locale("th","TH")).format($F{BOOKING_DATE}):"-"))]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="680" y="0" width="120" height="24" isPrintWhenDetailOverflows="true" uuid="c19d7b1c-1b7f-4243-aaa1-7ddcf3fa7cc9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="0"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BRANCH_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="45" y="0" width="165" height="24" isPrintWhenDetailOverflows="true" uuid="fa1634fb-6d4c-466c-8544-9a006bfaab83">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{GENDER}+" "+$F{DOCTOR_NAME_TH}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band/>
+	</summary>
+	<noData>
+		<band height="81">
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="57" width="800" height="24" isPrintWhenDetailOverflows="true" backcolor="#FFFFFF" uuid="bcf7ce6a-9999-4c1e-a931-f3b9607aa34d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[ไม่พบข้อมูล]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="480" y="33" width="90" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="f4569a45-15c4-4d3b-9b60-55d64afad42c">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="0"/>
+				</textElement>
+				<text><![CDATA[วันที่เข้ารับบริการ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="370" y="33" width="110" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="a96f35ab-3fb2-4894-9e44-2fbac0401f35">
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0"/>
+				</textElement>
+				<text><![CDATA[เบอร์โทร]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="45" y="33" width="165" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="a6c5bcaf-4e9b-426b-94ae-2a6b4c6ae16d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0"/>
+				</textElement>
+				<text><![CDATA[ชื่อแพทย์]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="33" width="45" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="0dcf1e72-fb58-4666-9be4-94eb4354be58">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0"/>
+				</textElement>
+				<text><![CDATA[ลำดับที่]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="570" y="33" width="110" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="eb312ae9-3302-4da1-a6cc-389503bd9a24">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="0"/>
+				</textElement>
+				<text><![CDATA[ประเภทการจอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="680" y="33" width="120" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="f16e99d3-e4ab-4cba-b742-76d45d06e19c">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="0"/>
+				</textElement>
+				<text><![CDATA[สาขาที่จอง]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="352" y="0" width="89" height="24" isPrintWhenDetailOverflows="true" uuid="d53cd71c-574e-4038-a4b0-288989c3f32c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy", new Locale("th","TH")).format($P{dateFrom})]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="509" y="0" width="91" height="24" isPrintWhenDetailOverflows="true" uuid="cda2621f-3e8a-4596-aeef-81b5d3e8a827">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy", new Locale("th","TH")).format($P{dateTo})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="441" y="0" width="68" height="30" isPrintWhenDetailOverflows="true" uuid="6b0c44fc-a0ab-46a4-9795-73589d4a2602"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ถึงวันที่"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="352" height="30" isPrintWhenDetailOverflows="true" uuid="494f77a8-981b-4f02-b0c8-422e393b9134">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["รายการเข้ารับบริการตั้งแต่วันที่"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="210" y="33" width="160" height="24" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="9bf715a3-dc02-48bf-8018-c78d6ad24c28">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="0"/>
+				</textElement>
+				<text><![CDATA[ชื่อลูกค้า]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

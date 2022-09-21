@@ -1,0 +1,1054 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT-002" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a268d07c-d9b0-4632-9492-374e649379c4">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
+	<parameter name="dateFrom" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="dateTo" class="java.util.Date"/>
+	<parameter name="dateFromTh" class="java.lang.String"/>
+	<parameter name="dateToTh" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[WITH TOTAL AS (
+	SELECT V.BRANCH_ID,D.ID AS DOCTOR_ID,
+	SUM(V.TIME_GAP_REMAIN) / D.GENERAL_DOCTOR_OPERATION_EFFORT AS TOTAL_Q
+	FROM DOCTOR D
+	LEFT JOIN VALID_TIME_TABLE V ON V.DOCTOR_ID = D.ID
+	where TRUNC(DATE) >= TRUNC($P{dateFrom})
+	and TRUNC(DATE) <= TRUNC($P{dateTo})
+	GROUP BY V.BRANCH_ID,D.ID,D.GENERAL_DOCTOR_OPERATION_EFFORT
+
+)
+, ALL_BOOKED AS(
+	SELECT BRANCH_ID,DOCTOR_ID,COUNT(ID) AS TOTAL_BOOKED
+	FROM BOOKING
+	WHERE BOOKING_STATUS = 'CONFIRMED'
+	AND APPOINTMENT_TYPE  IN ('PROCEDURE_NOSE', 'PROCEDURE_CHIN', 'FIXING_NOSE', 'FIXING_CHIN', 'WARRANTY_NOSE', 'WARRANTY_CHIN')
+	AND TRUNC(BOOKING_DATE) >= TRUNC($P{dateFrom}) and TRUNC(BOOKING_DATE) <= TRUNC($P{dateTo})
+	GROUP BY BRANCH_ID,DOCTOR_ID
+)
+, TYPE_BOOKED AS (
+	SELECT B.BRANCH_ID,B.DOCTOR_ID,B.APPOINTMENT_TYPE,A.APPOINTMENT_TYPE_NAME_TH,COUNT(B.ID) AS NUM_OF_TYPE
+	FROM BOOKING B
+	INNER JOIN APPOINTMENT A
+	ON B.APPOINTMENT_TYPE = A.APPOINTMENT_TYPE
+	WHERE B.BOOKING_STATUS = 'CONFIRMED'
+	AND TRUNC(BOOKING_DATE) >= TRUNC($P{dateFrom})
+	AND TRUNC(BOOKING_DATE) <= TRUNC($P{dateTo})
+	GROUP BY B.BRANCH_ID,B.DOCTOR_ID,B.APPOINTMENT_TYPE,A.APPOINTMENT_TYPE_NAME_TH
+)
+, PIVOT_TYPE AS (
+	SELECT BRANCH_ID,DOCTOR_ID,MAX(
+		CASE WHEN APPOINTMENT_TYPE = 'PROCEDURE_NOSE' THEN NUM_OF_TYPE END
+	) AS NUM_PROC_NOSE,
+	MAX(
+		CASE WHEN APPOINTMENT_TYPE = 'PROCEDURE_CHIN' THEN NUM_OF_TYPE END
+	) AS NUM_PROC_CHIN,
+	MAX(
+		CASE WHEN APPOINTMENT_TYPE = 'FIXING_NOSE' THEN NUM_OF_TYPE END
+	) AS NUM_FIX_NOSE,
+	MAX(
+		CASE WHEN APPOINTMENT_TYPE = 'FIXING_CHIN' THEN NUM_OF_TYPE END
+	) AS NUM_FIX_CHIN,
+	MAX(
+		CASE WHEN APPOINTMENT_TYPE = 'WARRANTY_NOSE' THEN NUM_OF_TYPE END
+	) AS NUM_WAR_NOSE,
+	MAX(
+		CASE WHEN APPOINTMENT_TYPE = 'WARRANTY_CHIN' THEN NUM_OF_TYPE END
+	) AS NUM_WAR_CHIN
+	FROM TYPE_BOOKED
+	GROUP BY BRANCH_ID,DOCTOR_ID
+)
+SELECT DR.FIRST_NAME_TH,
+	DR.LAST_NAME_TH,
+	BR.BRANCH_NAME_TH,
+	COALESCE(T.TOTAL_Q,0) as TOTAL_Q,
+	CASE
+	  WHEN B.TOTAL_BOOKED IS NOT NULL
+	  THEN COALESCE( T.TOTAL_Q - B.TOTAL_BOOKED,0)
+	  ELSE T.TOTAL_Q
+	END as VACANT,
+	COALESCE( B.TOTAL_BOOKED,0) AS BOOKED,
+	COALESCE( P.NUM_PROC_NOSE,0) as NUM_PROC_NOSE,
+	COALESCE( P.NUM_PROC_CHIN,0) as NUM_PROC_CHIN,
+	COALESCE( P.NUM_FIX_NOSE,0) as NUM_FIX_NOSE,
+	COALESCE( P.NUM_FIX_CHIN,0) as NUM_FIX_CHIN,
+	COALESCE( P.NUM_WAR_NOSE,0) as NUM_WAR_NOSE,
+	COALESCE( P.NUM_WAR_CHIN,0) as NUM_WAR_CHIN
+FROM DOCTOR DR
+LEFT JOIN TOTAL T ON T.DOCTOR_ID = DR.ID
+LEFT JOIN BRANCH BR ON T.BRANCH_ID = BR.ID
+LEFT JOIN ALL_BOOKED B ON T.DOCTOR_ID = B.DOCTOR_ID AND T.BRANCH_ID = B.BRANCH_ID
+LEFT JOIN PIVOT_TYPE P ON T.DOCTOR_ID = P.DOCTOR_ID AND T.BRANCH_ID = P.BRANCH_ID
+ORDER BY dr.DOCTOR_SEQ , br.id]]>
+	</queryString>
+	<field name="FIRST_NAME_TH" class="java.lang.String"/>
+	<field name="LAST_NAME_TH" class="java.lang.String"/>
+	<field name="BRANCH_NAME_TH" class="java.lang.String"/>
+	<field name="TOTAL_Q" class="java.lang.Integer"/>
+	<field name="VACANT" class="java.lang.Integer"/>
+	<field name="BOOKED" class="java.lang.Integer"/>
+	<field name="NUM_PROC_NOSE" class="java.lang.Integer"/>
+	<field name="NUM_PROC_CHIN" class="java.lang.Integer"/>
+	<field name="NUM_FIX_NOSE" class="java.lang.Integer"/>
+	<field name="NUM_FIX_CHIN" class="java.lang.Integer"/>
+	<field name="NUM_WAR_NOSE" class="java.lang.Integer"/>
+	<field name="NUM_WAR_CHIN" class="java.lang.Integer"/>
+	<variable name="TOTAL_Q_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{TOTAL_Q}]]></variableExpression>
+	</variable>
+	<variable name="VACANT_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{VACANT}]]></variableExpression>
+	</variable>
+	<variable name="BOOKED_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{BOOKED}]]></variableExpression>
+	</variable>
+	<variable name="NUM_PROC_NOSE_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{NUM_PROC_NOSE}]]></variableExpression>
+	</variable>
+	<variable name="NUM_PROC_CHIN_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{NUM_PROC_CHIN}]]></variableExpression>
+	</variable>
+	<variable name="NUM_FIX_NOSE_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{NUM_FIX_NOSE}]]></variableExpression>
+	</variable>
+	<variable name="NUM_FIX_CHIN_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{NUM_FIX_CHIN}]]></variableExpression>
+	</variable>
+	<variable name="NUM_WAR_NOSE_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{NUM_WAR_NOSE}]]></variableExpression>
+	</variable>
+	<variable name="NUM_WAR_CHIN_1" class="java.lang.Integer" resetType="Group" resetGroup="DOCTOR_NAME_GROUP" calculation="Sum">
+		<variableExpression><![CDATA[$F{NUM_WAR_CHIN}]]></variableExpression>
+	</variable>
+	<group name="DOCTOR_NAME_GROUP">
+		<groupExpression><![CDATA[$F{FIRST_NAME_TH}+$F{LAST_NAME_TH}]]></groupExpression>
+		<groupFooter>
+			<band height="20">
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="223" y="0" width="70" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="0826acd6-8f23-44d2-b782-5e55699d4ace"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{TOTAL_Q_1}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="293" y="0" width="55" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="b4e8e3a8-29ea-47ca-8d3c-053f6badc774"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{VACANT_1}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="348" y="0" width="80" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="5129a206-f728-46ab-bfe5-94bfce2ea850"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{BOOKED_1}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="428" y="0" width="62" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="8a316d53-1603-45ed-8b02-7657f3741c83"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{NUM_PROC_NOSE_1}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="490" y="0" width="62" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="05186f6e-3ac9-4102-99ce-bd6e172d0b66"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{NUM_PROC_CHIN_1}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="552" y="0" width="62" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="6c96a15c-401e-4508-a3b5-13d42e5320a5"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{NUM_FIX_NOSE_1}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="614" y="0" width="62" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="c2582353-cd04-49f9-a892-67215553f895"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{NUM_FIX_CHIN_1}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="676" y="0" width="62" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="e37b46de-1dac-4a54-b392-55e1dffc1b4a"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{NUM_WAR_NOSE_1}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="738" y="0" width="64" height="20" isPrintWhenDetailOverflows="true" backcolor="#FFCC99" uuid="a911cd78-445c-4dff-8cc7-5cd7391d7cca"/>
+					<box rightPadding="3">
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{NUM_WAR_CHIN_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="31" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="308" height="20" isPrintWhenDetailOverflows="true" uuid="13c86836-432d-4e9a-a81b-15ac3e1df093"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["สรุปการจองตั้งเเต่วันที่"]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="513" y="0" width="193" height="20" isPrintWhenDetailOverflows="true" uuid="f12bc6e6-c8c6-4aab-8d13-b26e8ce96f31"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateToTh}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="308" y="0" width="107" height="20" isPrintWhenDetailOverflows="true" uuid="bdc25dcd-3bae-4a52-9c6e-9b3666a94b7c"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateFromTh}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="415" y="0" width="98" height="20" isPrintWhenDetailOverflows="true" uuid="f4d31f9f-15a5-4804-9e0b-8029b81916f5"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ถึงวันที่"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="100" splitType="Stretch">
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="57" width="39" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="67d653d8-32f6-4a20-b66d-379f7674ddb5"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[ลำดับ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="139" y="57" width="84" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="79c7e569-98d9-4d63-8617-74b239b41c5d"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[สาขา]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="223" y="57" width="70" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="3dde2593-10fd-4004-92a0-01b95a74760b"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวทั้งหมด]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="39" y="57" width="100" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="c5e46d91-2dd6-498d-94ef-0005d57105b8"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[แพทย์]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="293" y="57" width="55" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="5123f45e-9e36-4d7d-adfa-df7ad5a87b5e"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวว่าง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="348" y="57" width="80" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="d97caa10-3689-42f2-98c3-db693331f02a"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวจองทั้งหมด]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="428" y="57" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="731f6c6c-97b2-44c3-b790-66450c30e063"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="490" y="57" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="915bcfb5-6d92-42fa-8b4a-928ed863d40f"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="552" y="57" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="d894a586-88c7-4970-8c33-70e1020557b3"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="614" y="57" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="e5373954-115c-4a1c-93ed-e08bc4747c24"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="676" y="57" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="31fd1833-1ddb-4435-b3fa-01777f4451db"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="428" y="0" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="98203a7b-6112-4291-acc4-a64298d23f99"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<text><![CDATA[เสริมจมูกใหม่]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="490" y="0" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="e4df6499-5bc4-4b5d-a09c-a567e2a7fb14"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[เสริมคางใหม่]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="552" y="0" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="a6f503b5-8418-4a48-b066-978e8d3fe5a1"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[แก้ไขจมูก]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="614" y="0" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="310f0ab1-7439-4cbb-96f8-02ba2b7846b6"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[แก้ไขคาง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="676" y="0" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="310be8d3-bcc6-4a11-a359-86532150ce6c"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[แก้ไขระยะ ประกันจมูก]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="738" y="0" width="64" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="38bf4672-d871-4006-b850-9ae7b9e510d2"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[แก้ไขระยะ ประกันคาง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="738" y="57" width="64" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="aafba3c8-63d5-4425-8254-b5e89c0e3842"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="42" splitType="Immediate">
+			<printWhenExpression><![CDATA[true]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="39" y="0" width="100" height="42" isPrintWhenDetailOverflows="true" uuid="80ffe8e7-7c7b-466c-a5a9-351a53bd8c8c"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{FIRST_NAME_TH}+" "+$F{LAST_NAME_TH}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="139" y="0" width="84" height="42" isPrintWhenDetailOverflows="true" uuid="89cb0e3c-4f8c-49e7-8341-93d35c85e3ae"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BRANCH_NAME_TH}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="223" y="0" width="70" height="42" isPrintWhenDetailOverflows="true" uuid="42f9ec6c-1c03-4d7e-872a-f3133f45bfdc"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TOTAL_Q}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="428" y="0" width="62" height="42" isPrintWhenDetailOverflows="true" uuid="ec229054-7dcf-4add-8d85-ba2916d11d5b"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUM_PROC_NOSE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="39" height="42" isPrintWhenDetailOverflows="true" uuid="995a42ff-e6e7-431d-9dec-70ed71c0ddf9"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="293" y="0" width="55" height="42" isPrintWhenDetailOverflows="true" uuid="8e581a96-0417-4015-976a-0a575b0520ae"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VACANT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="348" y="0" width="80" height="42" isPrintWhenDetailOverflows="true" uuid="d4a1624d-cb56-4976-801b-69a126a3e322"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BOOKED}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="490" y="0" width="62" height="42" isPrintWhenDetailOverflows="true" uuid="210b6cde-ca3c-40c4-af9f-5834175d7d35"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUM_PROC_CHIN}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="552" y="0" width="62" height="42" isPrintWhenDetailOverflows="true" uuid="ffe28fa3-cba5-499c-8486-04c5cf3aea2f"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUM_FIX_NOSE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="614" y="0" width="62" height="42" isPrintWhenDetailOverflows="true" uuid="eefffd96-f95a-4362-a48d-186f9a980688"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUM_FIX_CHIN}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="676" y="0" width="62" height="42" isPrintWhenDetailOverflows="true" uuid="d270ae73-843d-4895-9f51-954a58a762d6"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUM_WAR_NOSE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="738" y="0" width="64" height="42" isPrintWhenDetailOverflows="true" uuid="995764d7-7587-4ada-a7dc-3954416b7da6"/>
+				<box rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3" rightIndent="3" spacingAfter="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NUM_WAR_CHIN}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band/>
+	</summary>
+	<noData>
+		<band height="181">
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="139" width="802" height="42" isPrintWhenDetailOverflows="true" backcolor="#FFFFFF" uuid="bcf7ce6a-9999-4c1e-a931-f3b9607aa34d"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[ไม่พบข้อมูล]]></text>
+			</staticText>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="513" y="10" width="193" height="20" isPrintWhenDetailOverflows="true" uuid="61c111cb-0228-4a3b-bece-4014ece8c255"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateToTh}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="425" y="10" width="88" height="20" isPrintWhenDetailOverflows="true" uuid="5a701b6e-b6c6-4e2f-abc6-9262a889f706"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ถึงวันที่"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="10" width="308" height="20" isPrintWhenDetailOverflows="true" uuid="8bb6aa85-f66b-4f4f-b47c-fd0ebc3451c6"/>
+				<box>
+					<bottomPen lineWidth="0.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["สรุปการจองตั้งเเต่วันที่"]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="308" y="10" width="117" height="20" isPrintWhenDetailOverflows="true" uuid="3d9674ef-ed56-4288-a9b1-76b842b49f76"/>
+				<box>
+					<bottomPen lineWidth="1.0" lineStyle="Dashed"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="TH Sarabun New" size="12" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateFromTh}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="428" y="96" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="e131b681-2555-468d-bbd0-d4b13d3c6be6"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="490" y="39" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="a68f4ca1-eb27-451f-9855-b0c1350edd51"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[เสริมคางใหม่]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="348" y="96" width="80" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="433def0e-74e0-4e44-833f-f5182efcad53"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวจองทั้งหมด]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="676" y="96" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="26dcabf2-9f2c-4afd-9d97-a136ff199055"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="614" y="96" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="1147a49c-2cb6-4538-a713-e0e8ffbcfb86"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="428" y="39" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="aabaa828-8dcb-4741-8562-a6e2db67c102"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<text><![CDATA[เสริมจมูกใหม่]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="96" width="39" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="fd682fba-f619-4f3d-bf09-3d994ae11555"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[ลำดับ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="490" y="96" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="e9984e63-6a81-4ec6-bad0-3a14f5124783"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="552" y="39" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="674978f5-5829-4cfd-8a05-ce6133a252b9"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[แก้ไขจมูก]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="139" y="96" width="84" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="edafabf1-d532-435b-b76d-1f1baa067c01"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[สาขา]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="223" y="96" width="70" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="2c5b56d9-d7af-487f-b42b-daee959cf1e5"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวทั้งหมด]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="738" y="96" width="64" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="31e370f3-e507-4482-b49c-6e7192ff67f6"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="738" y="39" width="64" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="de7a9590-56bc-4dc4-8b9f-c1fe5d3ea0a8"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[แก้ไขระยะ ประกันคาง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="293" y="96" width="55" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="5c76663c-226e-4244-a785-27238e49ede0"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวว่าง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="614" y="39" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="c32c311b-6fd0-4402-80a9-09eb7b043924"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[แก้ไขคาง]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="676" y="39" width="62" height="57" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="759faa04-6edb-49b7-9322-a0a7d909c164"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[แก้ไขระยะ ประกันจมูก]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="39" y="96" width="100" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="370ae415-d75f-4894-9067-53bb087ba023"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="10"/>
+				</textElement>
+				<text><![CDATA[แพทย์]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="552" y="96" width="62" height="43" isPrintWhenDetailOverflows="true" forecolor="#FFFFFF" backcolor="#FF9999" uuid="b318de5f-9d59-442b-a575-653ecbe8741e"/>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="TH Sarabun New" size="12" isBold="true" pdfFontName="TH Sarabun New" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[จำนวนคิวที่จอง]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

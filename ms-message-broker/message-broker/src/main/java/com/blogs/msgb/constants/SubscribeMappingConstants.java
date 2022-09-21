@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SubscribeMappingConstants {
-	
-	
-	
 	public Map<String,List<String>> mainToSubscribe = new HashMap<String, List<String>>();
 	public Map<String,List<String>> mainToSubscribeName = new HashMap<String, List<String>>();
 	
@@ -28,9 +25,6 @@ public class SubscribeMappingConstants {
 			@Value(value = "${msg.service.report-service-event-receiver}") String reportServiceReceiver
 	){
 		/**Mapping Subscript register-service**/
-		mainToSubscribe.put("register-service",new ArrayList<String>(){{
-			/*add subscribe */
-		}});
 		mainToSubscribe.put("customer-service",new ArrayList<String>(){{
 			add(authenServiceReceiver);
 			add(reportServiceReceiver);
@@ -44,14 +38,9 @@ public class SubscribeMappingConstants {
 		mainToSubscribe.put("report-service",new ArrayList<String>(){{
 		}});
 		/*==================================================================================*/
-		
-		mainToSubscribeName.put("register-service",new ArrayList<String>(){{
-		}});
 		mainToSubscribeName.put("customer-service", new ArrayList<String>(){{
 			add("authenticate-service");
 			add("report-service");
-		}});
-		mainToSubscribeName.put("master-service",new ArrayList<String>(){{
 		}});
 		mainToSubscribeName.put("admin-service",new ArrayList<String>(){{
 		    	add("authenticate-service");
@@ -60,6 +49,8 @@ public class SubscribeMappingConstants {
 		mainToSubscribeName.put("authenticate-service",new ArrayList<String>(){{
 		}});
 		mainToSubscribeName.put("report-service",new ArrayList<String>(){{
+		}});
+		mainToSubscribeName.put("master-service",new ArrayList<String>(){{
 		}});
 	}
 }

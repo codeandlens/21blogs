@@ -24,6 +24,5 @@ public class ReportServiceApplication {
     @PostConstruct
     public void initMethod() {
 	subscriptedBAO.checkingDataCustomerSubscripted();
-	subscriptedBAO.checkingDataBookingSubscripted();
     }
 }

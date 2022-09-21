@@ -22,9 +22,6 @@ public class AuthenServiceImpl implements AuthenService {
     @Autowired
     private AdminRepo adminRepo;
     
-    
-    
-    
     @Override
     public CustomerDetail getLastestCustomer() {
 	return custRepo.getLastest();

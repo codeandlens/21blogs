@@ -13,7 +13,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -99,12 +98,6 @@ public class ReportServiceImpl implements ReportService {
 	    Map<String,Object> param = rptModel.getCriteria().getParameters();
 	    param.put("dateFrom", dateFrom);
 	    param.put("dateTo", dateTo);
-	    if(checkParemeterBranchByReportName(rptModel.getCriteria().getReportName())) {
-			String branchId = (String) rptModel.getCriteria().getParameters().get("branchCode");
-			if(StringUtils.isNoneBlank(branchId)){
-				param.put("branchId", Integer.valueOf(branchId));
-			}
-	    }
 	    param.put("dateFromTh", thDateYYYYMMDD(dateFrom));
 	    param.put("dateToTh", thDateYYYYMMDD(dateTo));
 	    ClassPathResource jasper = new ClassPathResource("report/" + rptModel.getCriteria().getReportName() + ".jrxml");
@@ -131,11 +124,7 @@ public class ReportServiceImpl implements ReportService {
 	return jasperPrint;
     }
     
-    private boolean checkParemeterBranchByReportName(String reportName) {
-	boolean result = false;
-	result = ReportConstant.MAPPING_REPORT_NAME_BRANCH_ID.containsKey(reportName);
-	return result;
-    }
+
 
     public static String thDateYYYYMMDD(Date date) {
 	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("th", "TH"));

@@ -39,26 +39,6 @@ public class MessageConstant {
     public static final String E400_P_AUTHEN_02 = "E400_P_AUTHEN_02";
     public static final String E400_P_AUTHEN_02_DESC = "ชื่อผู้ใช้ไม่ถูกต้อง";
 
-    public static final String E400_P_RPT_03 = "E400_P_ARR_03";
-    public static final String E400_P_RPT_03_DES = "หมอไม่มีในระบบ";
-    public static final String E400_P_RPT_06 = "E400_P_ARR_06";
-    public static final String E400_P_RPT_06_DES = "สาขาไม่มีในระบบ";
-    public static final String E400_P_RPT_07 = "E400_P_ARR_07";
-    public static final String E400_P_RPT_07_DES = "ช่วงเวลาที่เลือกเต็มแล้ว กรุณาเลือกช่วงเวลาใหม่";
-    public static final String E400_P_RPT_47 = "E400_P_ARR_47";
-    public static final String E400_P_RPT_47_DES = "ไม่ได้ระบุช่วงเวลาการทำงานของหมอ";
-    public static final String E400_P_RPT_48 = "E400_P_ARR_48";
-    public static final String E400_P_RPT_48_DES = "ไม่สารมารถ upload excel ได้เนื่องจากการตั้งค่าที่ sheet effort ไม่ถูกต้อง";
-    public static final String E400_P_RPT_49 = "E400_P_ARR_49";
-    public static final String E400_P_RPT_49_DES = "ไม่สามารถเลื่อนตารางหมอได้ เนื่องจากหมอไม่มีตารางเวลา ในวันดังกล่าว";
-    public static final String E400_P_RPT_50 = "E400_P_ARR_50";
-    public static final String E400_P_RPT_50_DES = "ไม่สามารถลงลาได้ เนื่องจากหมอไม่มีตารางเวลา ในวันดังกล่าว";
-    public static final String E400_P_RPT_51 = "E400_P_ARR_51";
-    public static final String E400_P_RPT_51_DES = "ไม่สามารถเปลี่ยนตารางหมอได้ เนื่องจากหมอไม่มีตารางเวลา ในวันดังกล่าว";
-
-    public static final String E500_U_RPT_UPLOAD_AFFECTED_BOOKING = "กรุณาตรวจสอบข้อมูลให้ถูกต้อง";
-    public static final String E500_U_RPT_UPLOAD_AFFECTED_BOOKING_DES = "เนื่องจากมีการเปลี่ยนแปลงตารางการทำงานที่กระทบกับการจองที่มีอยู่แล้ว";
-
     public static String getDescription(String desc, String message) {
 	return desc.replace("{0}", message);
     }

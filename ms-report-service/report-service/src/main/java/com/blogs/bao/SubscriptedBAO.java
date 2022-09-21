@@ -109,43 +109,4 @@ public class SubscriptedBAO {
 	/* End Retrieve Customer */
     }
 
-  
-    public void checkingDataBookingSubscripted() {
-	RequestModel<CheckingAndRetriveRequest> request = new RequestModel<CheckingAndRetriveRequest>();
-	/* Start Retrieve Booking */
-	try {
-	    
-//	    Booking lastBooking = subscriptedService.getLastestBooking();
-	    
-	    CheckingAndRetriveRequest criteria = new CheckingAndRetriveRequest();
-//	    if (lastBooking != null && lastBooking.getLastModifiedDate() != null) {
-//		criteria.setLastDataTimeStamp(lastBooking.getLastModifiedDate().toString());
-//	    } else {
-//		criteria.setLastDataTimeStamp("1900-01-01 00:00:00.000");
-//	    }
-	    criteria.setServiceName(serviceName);
-	    request.setCriteria(criteria);
-	    ResponseEntity<RetriveDataResponse> response = restHttpClient.httpPost(messageBrokerUrlRetrive, request,
-		    new ParameterizedTypeReference<RetriveDataResponse>() {
-		    });
-	    response.getBody().getData();
-	    @SuppressWarnings("unchecked")
-	    List<Map<String, Object>> rawDatas = (List<Map<String, Object>>) response.getBody().getData();
-	    for (Map<String, Object> raw : rawDatas) {
-		ObjectMapper mapper = new ObjectMapper();
-		RetriveDataResponse data = mapper.convertValue(raw, RetriveDataResponse.class);
-		EventReceiverModel eventModel = mapper.convertValue(data, EventReceiverModel.class);
-		receiveMessageFromBroker(eventModel);
-	    }
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	/* End Retrieve Booking */
-	
-    }
-
-
-
-
 }

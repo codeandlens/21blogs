@@ -35,8 +35,6 @@ import com.blogs.model.RequestModel;
 import com.blogs.model.ResponseModel;
 import com.blogs.service.AddressService;
 import com.blogs.service.CustomerService;
-import com.blogs.service.FacebookService;
-import com.blogs.service.LineService;
 import com.blogs.utils.RestHttpClient;
 
 @Component
@@ -47,12 +45,6 @@ public class CustomerBAO {
 
     @Autowired
     private AddressService addressService;
-    
-    @Autowired
-    private FacebookService faceBookService;
-    
-    @Autowired
-    private LineService lineService;
 
     @Autowired
     private RestHttpClient restHttpClient;
@@ -141,14 +133,6 @@ public class CustomerBAO {
 		}
 		entity.setLatestInviteDate(currentDateStr);
 		entity.setRegisterDate(currentDateStr);
-		if(!StringUtils.isBlank(request.getCriteria().getFacebookId())) {
-		    entity.setFbLoginId(faceBookService.generateLoginId(request.getCriteria().getFacebookId()));
-		    faceBookService.sendMessageFacebook1stTime(entity.getFbLoginId());
-		}
-		
-		if(!StringUtils.isBlank(request.getCriteria().getLineId())) {
-		    lineService.sendMessageLine1stTime(request.getCriteria().getLineId());
-		}
 		
 		CustomerDetail serviceResult = new CustomerDetail();
 		try {

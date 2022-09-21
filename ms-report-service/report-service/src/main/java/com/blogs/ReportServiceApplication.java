@@ -25,12 +25,5 @@ public class ReportServiceApplication {
     public void initMethod() {
 	subscriptedBAO.checkingDataCustomerSubscripted();
 	subscriptedBAO.checkingDataBookingSubscripted();
-	subscriptedBAO.checkingDataQuestionnaireSubscripted();
-	subscriptedBAO.checkingDataInviteSubscripted();
-	subscriptedBAO.checkingDataUserAdminSubscripted();
-	subscriptedBAO.checkingDataAppointmentSubscripted();
-	subscriptedBAO.checkingDataDoctorSubscripted();
-	subscriptedBAO.checkingDataBranchSubscripted();
-	subscriptedBAO.checkingDataPaymentSlipSubscripted();
     }
 }

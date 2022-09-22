@@ -30,30 +30,12 @@ public class AdminController {
     @Autowired
     private AdminBAO adminBAO;
 
-    @PostMapping(value = "/getUser", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "getUser", notes = "Get User Admin")
+    @PostMapping(value = "/getAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "getAdmin", notes = "Get Admin")
     public ResponseModel<List<Admin>> getUser(@RequestBody Admin request) {
-	return adminBAO.getUserAll();
+	return adminBAO.getAdminAll();
     }
 
-//    @PostMapping(value = "/getUserId", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiOperation(value = "getUserId", notes = "Get User Admin Find By User Id")
-//    public ResponseModel<User> getUserId(@RequestBody RequestModel<User> request) {
-//	return adminBAO.getAdminByUserId(request);
-//    }
-
-//    @PostMapping(value = "/loginAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiOperation(value = "loginAdmin", notes = "Admin Login")
-//    public ResponseModel<User> loginAdmin(@RequestBody RequestModel<User> request) {
-//	return new ResponseModel(request);
-//    }
-
-//    @PostMapping(value = "/registerAdminUser", produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ApiOperation(value = "registerAdminUser", notes = "Register Admin User")
-//    public ResponseModel<User> registerAdminUser(@RequestBody User request) {
-//	return adminBAO.registerAdminUser(request);
-//    }
-//    
     @PostMapping(value = "/createAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "createAdmin", notes = "Create Admin")
     public ResponseModel<CreateAdminResponseModel> createAdmin(@RequestBody RequestModel<CreateAdminRequestModel> request) {

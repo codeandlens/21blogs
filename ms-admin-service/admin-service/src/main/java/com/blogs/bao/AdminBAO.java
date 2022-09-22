@@ -34,7 +34,7 @@ public class AdminBAO {
     @Value(value = "${jwt.secret}")
     private String jwtSecret;
 
-    public ResponseModel<List<Admin>> getUserAll() {
+    public ResponseModel<List<Admin>> getAdminAll() {
 	ResponseModel<List<Admin>> response = new ResponseModel<List<Admin>>();
 	List<Admin> userList = new ArrayList<Admin>();
 	try {

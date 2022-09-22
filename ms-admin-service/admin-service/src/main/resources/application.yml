@@ -25,8 +25,9 @@ spring:
 jwt:
   secret: 21blogs
   
+service-token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjoiMTIzNDUiLCJ1c2VyTmFtZSI6Ildvb3R0aXBvbmcgU2Fvd2F5b25nIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNTE2MjM5MDIyfQ.-nBxPrEZkYuZcFkZt9Ot-tSp77tc_DMM3rkhxg9VV9M"      
+url-create-admin: "/api/createAdmin"
+  
 message-broker:
-  url: "http://104.237.9.111:1000/prokeSubscribe"
-  url-retrive: "http://104.237.9.111:1000/checkingQueueAndRetrive"
-#   url: "http://localhost:8000/prokeSubscribe"
-#   url-retrive: "http://localhost:8000/checkingQueueAndRetrive"
+   url: "http://localhost:8000/prokeSubscribe"
+   url-retrive: "http://localhost:8000/checkingQueueAndRetrive"

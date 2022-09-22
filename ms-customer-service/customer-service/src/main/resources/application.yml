@@ -1,4 +1,4 @@
-spring:  service-name: customer-service
+server:  port : 8081spring:  service-name: customer-service
   h2:
     console:
       enabled: true
@@ -25,5 +25,4 @@ spring:  service-name: customer-service
 jwt:
   secret: 21blogs
 
-message-broker:
-  url: "http://104.237.9.111:1000/prokeSubscribe"  url-retrive: "http://104.237.9.111:1000/checkingQueueAndRetrive"  
+message-broker:  url: "http://localhost:8000/prokeSubscribe"  url-retrive: "http://localhost:8000/checkingQueueAndRetrive"    

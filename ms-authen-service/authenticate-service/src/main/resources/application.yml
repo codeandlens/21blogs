@@ -1,5 +1,5 @@
 server:
-  port : 8085
+  port : 8083
 spring:
   service-name: authenticate-service
   h2:
@@ -26,9 +26,8 @@ jwt:
   secret: 21blogs
 
 message-broker:
-  url: "http://104.237.9.111:1000/prokeSubscribe"
-  url-retrive: "http://104.237.9.111:1000/checkingQueueAndRetrive"
-#  url-retrive: "http://localhost:8000/checkingQueueAndRetrive"
+  url: "http://localhost:8000/prokeSubscribe"
+  url-retrive: "http://localhost:8000/checkingQueueAndRetrive"
 
 program-config:
   timezone: "Asia/Bangkok"

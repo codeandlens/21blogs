@@ -14,9 +14,9 @@ import com.blogs.entity.Admin;
 @Repository
 public interface AdminRepo extends PagingAndSortingRepository<Admin, Integer>, JpaSpecificationExecutor<Admin>{
     
-    @Query("SELECT u FROM User u WHERE u.username =:username ")
+    @Query("SELECT u FROM Admin u WHERE u.username =:username ")
     public Admin findByUsername(String username);
 
-    @Query(value = "SELECT * FROM USER ORDER BY LAST_MODIFIED_DATE DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM ADMIN ORDER BY LAST_MODIFIED_DATE DESC LIMIT 1", nativeQuery = true)
     public Admin getLastest();
 }

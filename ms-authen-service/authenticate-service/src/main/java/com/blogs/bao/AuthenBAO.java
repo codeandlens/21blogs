@@ -4,6 +4,9 @@
  */
 package com.blogs.bao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +28,6 @@ import com.blogs.constant.MessageConstant;
 import com.blogs.entity.Admin;
 import com.blogs.entity.CustomerDetail;
 import com.blogs.model.CheckingAndRetriveRequest;
-import com.blogs.model.CustomerDetailModel;
 import com.blogs.model.EventReceiverModel;
 import com.blogs.model.GenerateTokenRequestModel;
 import com.blogs.model.GenerateTokenResponseModel;
@@ -98,9 +100,12 @@ public class AuthenBAO {
     public ResponseModel receiveMessageFromBroker(EventReceiverModel request) {
 	ResponseModel response = new ResponseModel();
 	try {
+	    Date date = Calendar.getInstance().getTime();  
+	    DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+	    String currentDateStr = dateFormat.format(date); 
 	    if (FavoritCustomerConstant.createCustomer.equals(request.getEvent())) {
 		ObjectMapper mapper = new ObjectMapper();
-		CustomerDetailModel eventData = mapper.convertValue(request.getData(), CustomerDetailModel.class);
+		CustomerDetail eventData = mapper.convertValue(request.getData(), CustomerDetail.class);
 		CustomerDetail target = new CustomerDetail();
 		BeanUtils.copyProperties(eventData, target);
 		authenService.saveCustomer(target);
@@ -108,9 +113,10 @@ public class AuthenBAO {
 		response.setDesc(MessageConstant.S200_DES);
 	    } else if (FavoritCustomerConstant.updateCustomer.equals(request.getEvent())) {
 		ObjectMapper mapper = new ObjectMapper();
-		CustomerDetailModel eventData = mapper.convertValue(request.getData(), CustomerDetailModel.class);
+		CustomerDetail eventData = mapper.convertValue(request.getData(), CustomerDetail.class);
 		CustomerDetail target = new CustomerDetail();
 		BeanUtils.copyProperties(eventData, target);
+		target.setRegisterDate(currentDateStr);
 		authenService.saveCustomer(target);
 		response.setCode(MessageConstant.S200);
 		response.setDesc(MessageConstant.S200_DES);
@@ -150,26 +156,24 @@ public class AuthenBAO {
 	    GenerateTokenResponseModel model = new GenerateTokenResponseModel();
 	    String authenToken = "";
 	    JwtTokenModel token = new JwtTokenModel();
-	    String citizenId = request.getCriteria().getUsername(); 
-	    CustomerDetail customer = authenService.getCustomerDetailByCitizenId(citizenId);
+	    String username = request.getCriteria().getUsername(); 
+	    CustomerDetail customer = authenService.findCustomerDetailByUsername(username);
 	    if(customer != null) {
-        	    String customerBirthDate = customer.getDayOfBirth().toString()+customer.getMonthOfBirth()+customer.getYearOfBirth().toString();
-        	    boolean statusBirthDatePassword = setBirthDateFormat(request.getCriteria().getPassword(), customerBirthDate);
-        	    if(statusBirthDatePassword) {
+        	   
+		boolean checkPassword = PassBasedEnc.verifyUserPassword(request.getCriteria().getPassword(), customer.getPassword(), jwtSecret);
+		if(checkPassword) {
                 	    token.setUserId(customer.getId().toString());
                 	    token.setRole(AuthenConstant.ROLE_CUSTOMER);
                 	    token.setName(customer.getFirstName()+" "+customer.getLastName());
-                	    token.setUsername(customer.getFirstName()+" "+customer.getLastName());
+                	    token.setUsername(customer.getUsername());
                 	    authenToken = gentoken(token);
                 	    model.setAuthenToken(authenToken);
         	    } else {
-        		// วันเกิดไม่ถูก
         		 response.setCode(MessageConstant.E400_P_AUTHEN_01);
         		 response.setDesc(MessageConstant.getDescription(MessageConstant.E400_P_AUTHEN_01_DESC, MessageConstant.ERROR_QUERY));
         		 return response;
         	    }
 	    } else {
-		// token Admin fix
 		
 		Admin admin = authenService.getUserByUsername(request.getCriteria().getUsername());
 		if(admin == null) {
@@ -177,10 +181,6 @@ public class AuthenBAO {
 		    response.setDesc(MessageConstant.getDescription(MessageConstant.E400_P_AUTHEN_02_DESC, MessageConstant.SUCC_QUERY));
 		    return response;
 		}
-		//String salt = BCrypt.gensalt(AdminConstant.DEFAULT_SALT+"_"+jwtSecret);
-		//String generatedSecuredPasswordHash = BCrypt.hashpw(request.getCriteria().getPassword(), salt);
-		//boolean matched = BCrypt.checkpw(request.getCriteria().getPassword(), generatedSecuredPasswordHash);
-		
 		Boolean matched = PassBasedEnc.verifyUserPassword(request.getCriteria().getPassword(), admin.getPassword(), jwtSecret); 
 		if(matched) {
     			token.setUserId(admin.getAdminId().toString());
@@ -189,12 +189,11 @@ public class AuthenBAO {
         	    	token.setUsername(admin.getFullName());
         	    	authenToken = gentoken(token);
         	    	model.setAuthenToken(authenToken);
-		}else{
+		} else {
 		    response.setCode(MessageConstant.E400_P_AUTHEN_01);
 		    response.setDesc(MessageConstant.getDescription(MessageConstant.E400_P_AUTHEN_01_DESC, MessageConstant.SUCC_QUERY));
 		    return response;
 		}
-		
 	    }
 	    response.setData(model);
 	    response.setCode(MessageConstant.S200);
@@ -234,37 +233,7 @@ public class AuthenBAO {
 	return token;
     }
     
-    /*
-     * table customer เก็บวันเดือนปีเกิดเป็น type Integer
-     */
-    private boolean setBirthDateFormat(String password , String customerBirthDate) {
-	
-	if(password.length() != 8) {
-	    return false;
-	}
-	
-	String day = password.substring(0, 2);
-	String month = password.substring(2, 4);
-	String year = password.substring(4, 8);
-	
-	char d = day.intern().charAt(0);
-	if(d == '0') {
-	    day = day.replaceAll("0","");
-	}
-	
-	char m = month.intern().charAt(0);
-	if(m == '0') {
-	    month = month.replaceAll("0","");
-	}
-	
-	String birthDate = day+month+year;
-	if(customerBirthDate.equals(birthDate)) {
-	    return true;
-	}else {
-	    return false;
-	}
-	
-    }
+   
 
 
 }

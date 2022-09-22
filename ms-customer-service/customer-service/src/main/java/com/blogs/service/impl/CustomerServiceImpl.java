@@ -3,6 +3,12 @@ package com.blogs.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,14 +23,6 @@ import com.blogs.model.RequestModel;
 import com.blogs.model.ResponseModel;
 import com.blogs.repository.CustomerDeatilRepo;
 import com.blogs.service.CustomerService;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import org.apache.commons.lang3.StringUtils;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -50,12 +48,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
     
     @Override
-    public List<CustomerDetail> getCustomerByBbLoginId(String fbLoginId) {
-	List<CustomerDetail> result = repository.findByFbLoginId(fbLoginId);
-	return result;
-    }
-
-    @Override
     public ResponseModel<List<CustomerDetailModel>> searchCustomer(RequestModel<CustomerSearchRequestModel> param) {
 	ResponseModel<List<CustomerDetailModel>> result = new ResponseModel<>();
 	CustomerSearchRequestModel searchParam = param.getCriteria();
@@ -66,19 +58,17 @@ public class CustomerServiceImpl implements CustomerService {
 	    public Predicate toPredicate(Root<CustomerDetail> root, CriteriaQuery<?> cq, CriteriaBuilder cb) {
 		Predicate andPredicate = cb.conjunction();
 		Predicate orPredicate = cb.disjunction();
-		if (searchParam != null && searchParam.getAdminId() != null) {
-		    andPredicate.getExpressions().add(cb.equal(root.get("adminId"), searchParam.getAdminId()));
-		}
+		
 
 		if (searchParam != null && searchParam.getIsByPhoneNo() != null && searchParam.getIsByPhoneNo()
 			&& StringUtils.isNotEmpty(searchParam.getSearchText())) {
 		    orPredicate.getExpressions().add(cb.like(root.get("telNo"), "%" + searchParam.getSearchText() + "%"));
 		}
 
-		if (searchParam != null && searchParam.getIsByNid() != null && searchParam.getIsByNid()
-			&& StringUtils.isNotEmpty(searchParam.getSearchText())) {
-		    orPredicate.getExpressions().add(cb.like(root.get("citizenId"), "%" + searchParam.getSearchText() + "%"));
-		}
+//		if (searchParam != null && searchParam.getIsByNid() != null && searchParam.getIsByNid()
+//			&& StringUtils.isNotEmpty(searchParam.getSearchText())) {
+//		    orPredicate.getExpressions().add(cb.like(root.get("citizenId"), "%" + searchParam.getSearchText() + "%"));
+//		}
 
 		if (searchParam != null && searchParam.getIsByName() && StringUtils.isNotEmpty(searchParam.getSearchText())) {
 		    orPredicate.getExpressions().add(cb.like(cb.lower(cb.concat(cb.concat(cb.concat(cb.concat(cb.coalesce(root.get("firstName"),"")," "), cb.coalesce(root.get("lastName"),""))," "),cb.coalesce(root.get("nickName"),""))),
@@ -89,9 +79,10 @@ public class CustomerServiceImpl implements CustomerService {
 		    andPredicate.getExpressions().add(cb.and(orPredicate));
 		}
 
-		if (param != null && StringUtils.isNotBlank(searchParam.getSortBy())) {
-		    cq.orderBy(cb.desc(root.get(searchParam.getSortBy())));
-		}
+//		if (param != null && StringUtils.isNotBlank(searchParam.getSortBy())) {
+//		    cq.orderBy(cb.desc(root.get(searchParam.getSortBy())));
+//		}
+		
 		return andPredicate;
 	    }
 	};

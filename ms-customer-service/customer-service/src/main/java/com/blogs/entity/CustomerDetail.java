@@ -61,6 +61,9 @@ public class CustomerDetail extends BaseEntity implements Serializable {
     @Column(name = "REGISTER_DATE", nullable = true)
     private String registerDate;
     
+    @Column(name = "STATUS", nullable = true)
+    private String status;
+    
     @Column(name = "NOTE", nullable = true)
     private String note;
     

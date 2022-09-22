@@ -11,7 +11,7 @@ public interface AuthenService {
     
     public CustomerDetail getLastestCustomer();
     public void saveCustomer(CustomerDetail data);
-    public CustomerDetail getCustomerDetailByCitizenId(String citizenId);
+    public CustomerDetail findCustomerDetailByUsername(String username);
     
     public void saveUser(Admin user);
     public Admin getUserByUsername(String username);

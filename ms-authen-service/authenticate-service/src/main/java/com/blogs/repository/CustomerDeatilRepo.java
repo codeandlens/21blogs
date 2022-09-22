@@ -18,5 +18,7 @@ public interface CustomerDeatilRepo
 	@Query(value ="SELECT * FROM CUSTOMER_DETAIL ORDER BY LAST_MODIFIED_DATE DESC LIMIT 1", nativeQuery = true)
 	public CustomerDetail getLastest();
 	
-	public CustomerDetail getCustomerDetailByCitizenId(String citizenId);
+	public CustomerDetail findCustomerDetailByUsername(String username);
+	
+	
 }

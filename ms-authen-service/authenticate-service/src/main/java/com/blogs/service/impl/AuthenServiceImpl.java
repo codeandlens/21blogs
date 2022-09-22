@@ -32,8 +32,8 @@ public class AuthenServiceImpl implements AuthenService {
     }
 
     @Override
-    public CustomerDetail getCustomerDetailByCitizenId(String citizenId) {
-	return custRepo.getCustomerDetailByCitizenId(citizenId);
+    public CustomerDetail findCustomerDetailByUsername(String username) {
+	return custRepo.findCustomerDetailByUsername(username);
     }
 
     @Override

@@ -33,10 +33,14 @@ import com.blogs.model.ProkeSubscribeRequest;
 import com.blogs.model.RequestModel;
 import com.blogs.model.ResponseModel;
 import com.blogs.service.CustomerService;
+import com.blogs.utils.PassBasedEnc;
 import com.blogs.utils.RestHttpClient;
 
 @Component
 public class CustomerBAO {
+    
+    @Value(value = "${jwt.secret}")
+    private String jwtSecret;
 
     @Autowired
     private CustomerService service;
@@ -123,6 +127,10 @@ public class CustomerBAO {
 		}
 		entity.setRegisterDate(currentDateStr);
 		
+		//set Password
+		String encryptedpassword = PassBasedEnc.generateSecurePassword(request.getCriteria().getPassword(),jwtSecret);
+		entity.setPassword(encryptedpassword);
+		
 		CustomerDetail serviceResult = new CustomerDetail();
 		try {
 		    serviceResult = service.saveCustomer(entity);
@@ -142,7 +150,6 @@ public class CustomerBAO {
 		    ProkeSubscribeRequest criteria = new ProkeSubscribeRequest();
 		    Map<String, Object> message = new HashMap<String, Object>();
 		    message.put("event", "create-customer");// create-customer //update-customer
-		    //target.setAddress(null);
 		    message.put("data", target);
 		    criteria.setMainServiceName("customer-service");
 		    criteria.setMessage(message);

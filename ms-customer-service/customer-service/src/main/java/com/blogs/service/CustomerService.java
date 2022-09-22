@@ -18,5 +18,4 @@ public interface CustomerService {
 
     public ResponseModel<List<CustomerDetailModel>> searchCustomer(RequestModel<CustomerSearchRequestModel> param);
 
-    public List<CustomerDetail> getCustomerByBbLoginId(String fbLoginId);
 }

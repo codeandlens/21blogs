@@ -118,9 +118,6 @@ public class CustomerDetailModel {
     @ApiModelProperty(notes = "Nick Name", example = "Nick")
     private String nickName;
     
-    @ApiModelProperty(notes = "Address")
-    private AddressModel address;
-    
     @ApiModelProperty(notes = "FaceBook LogIn ID")
     private String fbLoginId;
     

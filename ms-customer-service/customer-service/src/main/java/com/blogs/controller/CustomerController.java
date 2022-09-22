@@ -48,7 +48,7 @@ public class CustomerController {
 	return customerBao.deleteCustomerById(request);
     }
 
-    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/createCustomer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Create Customer", notes = "")
     public ResponseModel<CustomerDetailModel> create(@RequestBody RequestModel<CustomerDetailModel> request) {
 	return customerBao.createCustomer(request);
@@ -60,28 +60,5 @@ public class CustomerController {
 	return customerBao.updateCustomer(request);
     }
     
-    /*
-     * @PostMapping(value = "/sendMessageFbToCustomer", produces =
-     * MediaType.APPLICATION_JSON_VALUE)
-     * 
-     * @ApiOperation(value = "Update Customer", notes = "") public
-     * ResponseModel<String> sendMessageFbToCustomer(@RequestBody
-     * RequestModel<SendMessageFbToCustomerModel> request) { return
-     * customerBao.sendMessageFbToCustomer(request); }
-     * 
-     * @PostMapping(value = "/sendMessageLineToCustomer", produces =
-     * MediaType.APPLICATION_JSON_VALUE)
-     * 
-     * @ApiOperation(value = "sendMessageLineToCustomer", notes = "") public
-     * ResponseModel<String> sendMessageLineToCustomer(@RequestBody
-     * RequestModel<SendMessageLineToCustomerModel> request) { return
-     * customerBao.sendMessageLineToCustomer(request); }
-     * 
-     * @PostMapping(value = "/facebook-webhook", produces =
-     * MediaType.APPLICATION_JSON_VALUE)
-     * 
-     * @ApiOperation(value = "facebook webhook", notes = "") public
-     * ResponseModel<String> faceBookHook(@RequestBody FaceBookCallbackRequestModel
-     * request) { return customerBao.faceBookHook(request); }
-     */
+  
 }

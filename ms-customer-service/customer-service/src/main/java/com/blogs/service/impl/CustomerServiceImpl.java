@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.blogs.entity.Address;
 import com.blogs.entity.CustomerDetail;
 import com.blogs.model.CustomerDetailModel;
 import com.blogs.model.CustomerSearchRequestModel;
@@ -85,25 +84,7 @@ public class CustomerServiceImpl implements CustomerService {
 		    orPredicate.getExpressions().add(cb.like(cb.lower(cb.concat(cb.concat(cb.concat(cb.concat(cb.coalesce(root.get("firstName"),"")," "), cb.coalesce(root.get("lastName"),""))," "),cb.coalesce(root.get("nickName"),""))),
 			    "%" + searchParam.getSearchText().toLowerCase() + "%"));
 		}
-		if (searchParam != null && searchParam.getIsByAddress() && StringUtils.isNotEmpty(searchParam.getSearchText())) {
-		    Predicate addressCondition = cb.conjunction();
-		    Subquery<Address> addressSubquery = cq.subquery(Address.class);
-		    Root<Address> AddressInfo = addressSubquery.from(Address.class);
-		    addressCondition.getExpressions()
-			    .add(cb.like(
-				    cb.lower(cb.concat(cb.concat(
-					    cb.concat(
-						    cb.concat(cb.coalesce(AddressInfo.get("addressInfo"), "") ,
-							    cb.coalesce(AddressInfo.get("provinceName"),"")),
-						    cb.coalesce(AddressInfo.get("districtName"),"")),
-					    cb.coalesce(AddressInfo.get("subDistrictName"),"")), 
-					    cb.coalesce(AddressInfo.get("postCode"),""))),
-
-				    "%" + searchParam.getSearchText().toLowerCase() + "%"));
-		    addressCondition.getExpressions().add(cb.equal(AddressInfo.get("customerId"), root.get("id")));
-		    addressSubquery.select(AddressInfo).where(addressCondition);
-		    orPredicate.getExpressions().add(cb.exists(addressSubquery));
-		}
+		
 		if(!orPredicate.getExpressions().isEmpty()) {
 		    andPredicate.getExpressions().add(cb.and(orPredicate));
 		}

@@ -25,15 +25,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import com.blogs.constant.MessageConstant;
-import com.blogs.entity.Address;
+//import com.blogs.entity.Address;
 import com.blogs.entity.CustomerDetail;
-import com.blogs.model.AddressModel;
 import com.blogs.model.CustomerDetailModel;
 import com.blogs.model.CustomerSearchRequestModel;
 import com.blogs.model.ProkeSubscribeRequest;
 import com.blogs.model.RequestModel;
 import com.blogs.model.ResponseModel;
-import com.blogs.service.AddressService;
 import com.blogs.service.CustomerService;
 import com.blogs.utils.RestHttpClient;
 
@@ -42,9 +40,6 @@ public class CustomerBAO {
 
     @Autowired
     private CustomerService service;
-
-    @Autowired
-    private AddressService addressService;
 
     @Autowired
     private RestHttpClient restHttpClient;
@@ -86,14 +81,9 @@ public class CustomerBAO {
 	    } else {
 		CustomerDetail serviceResult = service.getCustomerById(request.getCriteria().getId());
 		if (serviceResult != null) {
-		    Address addressResult = addressService.getAddressByCustomerId(request.getCriteria().getId());
-		    AddressModel address = new AddressModel();
-		    if (addressResult != null) {
-			BeanUtils.copyProperties(addressResult, address);
-		    }
+
 		    CustomerDetailModel target = new CustomerDetailModel();
 		    BeanUtils.copyProperties(serviceResult, target);
-		    target.setAddress(address);
 		    response.setData(target);
 		}
 		response.setCode(MessageConstant.S200);
@@ -131,7 +121,6 @@ public class CustomerBAO {
 			    .replace("data:image/jpg;base64,", "");
 		    entity.setPhoto(base64PhotoImage);
 		}
-		entity.setLatestInviteDate(currentDateStr);
 		entity.setRegisterDate(currentDateStr);
 		
 		CustomerDetail serviceResult = new CustomerDetail();
@@ -144,15 +133,7 @@ public class CustomerBAO {
 		}
 		CustomerDetailModel target = new CustomerDetailModel();
 		BeanUtils.copyProperties(serviceResult, target);
-		if (request.getCriteria().getAddress() != null) {
-		    Address addressEntity = new Address();
-		    BeanUtils.copyProperties(request.getCriteria().getAddress(), addressEntity);
-		    addressEntity.setCustomerId(serviceResult.getId());
-		    Address addressResult = addressService.saveAddress(addressEntity);
-		    AddressModel addressTarget = new AddressModel();
-		    BeanUtils.copyProperties(addressResult, addressTarget);
-		    target.setAddress(addressTarget);
-		}
+		
 		response.setData(target);
 		response.setCode(MessageConstant.S200);
 		response.setDesc(MessageConstant.S200_DES);
@@ -161,7 +142,7 @@ public class CustomerBAO {
 		    ProkeSubscribeRequest criteria = new ProkeSubscribeRequest();
 		    Map<String, Object> message = new HashMap<String, Object>();
 		    message.put("event", "create-customer");// create-customer //update-customer
-		    target.setAddress(null);
+		    //target.setAddress(null);
 		    message.put("data", target);
 		    criteria.setMainServiceName("customer-service");
 		    criteria.setMessage(message);
@@ -199,7 +180,6 @@ public class CustomerBAO {
 		CustomerDetail entity = new CustomerDetail();
 		BeanUtils.copyProperties(request.getCriteria(), entity);
 		entity.setRegisterDate(checkCustomer.getRegisterDate());
-		entity.setLatestInviteDate(checkCustomer.getLatestInviteDate());
 		entity.setLastModifiedDate(new Date());
 		if (StringUtils.isNotBlank(entity.getPhoto())) {
 		    String base64PhotoImage = entity.getPhoto();
@@ -218,16 +198,16 @@ public class CustomerBAO {
 		}
 		CustomerDetailModel target = new CustomerDetailModel();
 		BeanUtils.copyProperties(serviceResult, target);
-		if (request.getCriteria().getAddress() != null) {
-		    addressService.deleteAddressByCustomerId(serviceResult.getId());
-		    Address addressEntity = new Address();
-		    BeanUtils.copyProperties(request.getCriteria().getAddress(), addressEntity);
-		    addressEntity.setCustomerId(serviceResult.getId());
-		    Address addressResult = addressService.saveAddress(addressEntity);
-		    AddressModel addressTarget = new AddressModel();
-		    BeanUtils.copyProperties(addressResult, addressTarget);
-		    target.setAddress(addressTarget);
-		}
+//		if (request.getCriteria().getAddress() != null) {
+//		    addressService.deleteAddressByCustomerId(serviceResult.getId());
+//		    Address addressEntity = new Address();
+//		    BeanUtils.copyProperties(request.getCriteria().getAddress(), addressEntity);
+//		    addressEntity.setCustomerId(serviceResult.getId());
+//		    Address addressResult = addressService.saveAddress(addressEntity);
+//		    AddressModel addressTarget = new AddressModel();
+//		    BeanUtils.copyProperties(addressResult, addressTarget);
+//		    target.setAddress(addressTarget);
+//		}
 		response.setData(target);
 		response.setCode(MessageConstant.S200);
 		response.setDesc(MessageConstant.S200_DES);
@@ -236,7 +216,6 @@ public class CustomerBAO {
 		    ProkeSubscribeRequest criteria = new ProkeSubscribeRequest();
 		    Map<String, Object> message = new HashMap<String, Object>();
 		    message.put("event", "update-customer");// create-customer //update-customer
-		    target.setAddress(null);
 		    message.put("data", target);
 		    criteria.setMainServiceName("customer-service");
 		    criteria.setMessage(message);
@@ -267,7 +246,6 @@ public class CustomerBAO {
 		CustomerDetail serviceResult = service.getCustomerById(request.getCriteria().getId());
 		if (serviceResult != null) {
 		    service.deleteCustomerById(request.getCriteria().getId());
-		    addressService.deleteAddressByCustomerId(request.getCriteria().getId());
 		    response.setCode(MessageConstant.S200);
 		    response.setDesc(MessageConstant.S200_DES);
 		} else {
@@ -277,6 +255,7 @@ public class CustomerBAO {
 		return response;
 	    }
 	} catch (Exception e) {
+	    log.error(e.getMessage());
 	    e.printStackTrace();
 	    e.printStackTrace();
 	    response.setCode(MessageConstant.E500_U_CUS_00);

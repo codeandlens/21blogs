@@ -58,7 +58,6 @@ public class PassBasedEnc {
         String finalval = null;  
   
         byte[] securePassword = hash(password.toCharArray(), salt.getBytes());  
-   
         finalval = Base64.getEncoder().encodeToString(securePassword);  
    
         return finalval;  

@@ -30,7 +30,6 @@ public class Admin extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ADMINID", unique = true, nullable = false)
     private Integer adminId;
 

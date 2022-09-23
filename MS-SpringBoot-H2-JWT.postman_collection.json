@@ -110,7 +110,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"criteria\": {\r\n    \"password\": \"123456\",\r\n    \"username\": \"Woottipong.s\"\r\n  },\r\n  \"eventTimeStamp\": \"2022-09-22 17:34:00\",\r\n  \"page\": 0,\r\n  \"size\": 10,\r\n  \"timezone\": \"Asia/Bangkok\"\r\n}",
+							"raw": "{\r\n  \"criteria\": {\r\n    \"password\": \"P@ssw0rd\",\r\n    \"username\": \"admin\"\r\n  },\r\n  \"eventTimeStamp\": \"2022-09-22 17:34:00\",\r\n  \"page\": 0,\r\n  \"size\": 10,\r\n  \"timezone\": \"Asia/Bangkok\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -315,6 +315,188 @@
 							"path": [
 								"api",
 								"search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auto-Test-CreateCustomer",
+			"item": [
+				{
+					"name": "createAdmin Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"criteria\": {\r\n        \"fullName\": \"ผู้ดูแลระบบทดสอบ\",\r\n        \"fullNameEn\": \"test\",\r\n        \"roleName\": \"ADMIN\",\r\n        \"username\": \"test\",\r\n        \"password\": \"P@ssw0rd\"\r\n    },\r\n    \"page\": 0,\r\n    \"size\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin-Url}}/api/createAdmin",
+							"host": [
+								"{{admin-Url}}"
+							],
+							"path": [
+								"api",
+								"createAdmin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "generateToken Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(JSON.parse(responseBody));\r",
+									"var obj = JSON.parse(responseBody);\r",
+									"//postman.setEnvironmentVariable(\"code\", data.code);\r",
+									"console.log(obj.data.authenToken);\r",
+									"postman.setEnvironmentVariable(\"tokenLoginTest\", obj.data.authenToken);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"criteria\": {\r\n    \"password\": \"P@ssw0rd\",\r\n    \"username\": \"test\"\r\n  },\r\n  \"eventTimeStamp\": \"2022-09-22 17:34:00\",\r\n  \"page\": 0,\r\n  \"size\": 10,\r\n  \"timezone\": \"Asia/Bangkok\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{authen-Url}}/api/generateToken",
+							"host": [
+								"{{authen-Url}}"
+							],
+							"path": [
+								"api",
+								"generateToken"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createCustomer Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.get('tokenLoginTest')\r",
+									"console.log(pm.environment.get('tokenLoginTest'))"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log(JSON.parse(responseBody));\r",
+									"var obj = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"customerId\", obj.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenLoginTest}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"criteria\": {\r\n    \"email\": \"woottipongs_Test@gmail.com\",\r\n    \"firstName\": \"Woottipong_Test\",\r\n    \"gender\": \"Male\",\r\n    \"id\": 1,\r\n    \"lastName\": \"Saowayong\",\r\n    \"nickName\": \"Chivas_Test\",\r\n    \"note\": \"REMARK\",\r\n    \"password\": 123456,\r\n    \"photo\": \"BASE64\",\r\n    \"status\": \"Active\",\r\n    \"telNo\": \"0825555555\",\r\n    \"username\": \"Woottipong.test\"\r\n  },\r\n  \"page\": 0,\r\n  \"size\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{customer-Url}}/api/createCustomer",
+							"host": [
+								"{{customer-Url}}"
+							],
+							"path": [
+								"api",
+								"createCustomer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCustomerById Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenLoginTest}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"criteria\": {\r\n    \"id\": {{customerId}}\r\n  },\r\n  \"page\": 0,\r\n  \"size\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{customer-Url}}/api/getById",
+							"host": [
+								"{{customer-Url}}"
+							],
+							"path": [
+								"api",
+								"getById"
 							]
 						}
 					},

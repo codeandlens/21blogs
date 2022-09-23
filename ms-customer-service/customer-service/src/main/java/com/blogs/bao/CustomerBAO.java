@@ -205,16 +205,6 @@ public class CustomerBAO {
 		}
 		CustomerDetailModel target = new CustomerDetailModel();
 		BeanUtils.copyProperties(serviceResult, target);
-//		if (request.getCriteria().getAddress() != null) {
-//		    addressService.deleteAddressByCustomerId(serviceResult.getId());
-//		    Address addressEntity = new Address();
-//		    BeanUtils.copyProperties(request.getCriteria().getAddress(), addressEntity);
-//		    addressEntity.setCustomerId(serviceResult.getId());
-//		    Address addressResult = addressService.saveAddress(addressEntity);
-//		    AddressModel addressTarget = new AddressModel();
-//		    BeanUtils.copyProperties(addressResult, addressTarget);
-//		    target.setAddress(addressTarget);
-//		}
 		response.setData(target);
 		response.setCode(MessageConstant.S200);
 		response.setDesc(MessageConstant.S200_DES);

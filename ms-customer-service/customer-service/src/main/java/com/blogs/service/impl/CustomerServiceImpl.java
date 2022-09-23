@@ -60,17 +60,12 @@ public class CustomerServiceImpl implements CustomerService {
 		Predicate orPredicate = cb.disjunction();
 		
 
-		if (searchParam != null && searchParam.getIsByPhoneNo() != null && searchParam.getIsByPhoneNo()
-			&& StringUtils.isNotEmpty(searchParam.getSearchText())) {
+		if (searchParam != null && StringUtils.isNotEmpty(searchParam.getSearchText())) {
 		    orPredicate.getExpressions().add(cb.like(root.get("telNo"), "%" + searchParam.getSearchText() + "%"));
 		}
 
-//		if (searchParam != null && searchParam.getIsByNid() != null && searchParam.getIsByNid()
-//			&& StringUtils.isNotEmpty(searchParam.getSearchText())) {
-//		    orPredicate.getExpressions().add(cb.like(root.get("citizenId"), "%" + searchParam.getSearchText() + "%"));
-//		}
 
-		if (searchParam != null && searchParam.getIsByName() && StringUtils.isNotEmpty(searchParam.getSearchText())) {
+		if (searchParam != null && StringUtils.isNotEmpty(searchParam.getSearchText())) {
 		    orPredicate.getExpressions().add(cb.like(cb.lower(cb.concat(cb.concat(cb.concat(cb.concat(cb.coalesce(root.get("firstName"),"")," "), cb.coalesce(root.get("lastName"),""))," "),cb.coalesce(root.get("nickName"),""))),
 			    "%" + searchParam.getSearchText().toLowerCase() + "%"));
 		}
@@ -78,10 +73,6 @@ public class CustomerServiceImpl implements CustomerService {
 		if(!orPredicate.getExpressions().isEmpty()) {
 		    andPredicate.getExpressions().add(cb.and(orPredicate));
 		}
-
-//		if (param != null && StringUtils.isNotBlank(searchParam.getSortBy())) {
-//		    cq.orderBy(cb.desc(root.get(searchParam.getSortBy())));
-//		}
 		
 		return andPredicate;
 	    }

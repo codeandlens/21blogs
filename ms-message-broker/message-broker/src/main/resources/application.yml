@@ -32,6 +32,5 @@ msg:
     customer-service-event-receiver: "http://localhost:8081/api/event-receiver"
     admin-service-event-receiver: "http://localhost:8082/api/event-receiver"
     authenticate-service-event-receiver: "http://localhost:8083/api/event-receiver"
-    report-service-event-receiver: "http://localhost:8084/api/event-receiver"
 
   

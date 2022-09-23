@@ -54,7 +54,7 @@ public class CustomerController {
 	return customerBao.createCustomer(request);
     }
     
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/updateCustomer", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Update Customer", notes = "")
     public ResponseModel<CustomerDetailModel> update(@RequestBody RequestModel<CustomerDetailModel> request) {
 	return customerBao.updateCustomer(request);

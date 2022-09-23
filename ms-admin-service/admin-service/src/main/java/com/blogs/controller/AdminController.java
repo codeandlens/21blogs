@@ -32,7 +32,7 @@ public class AdminController {
 
     @PostMapping(value = "/getAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "getAdmin", notes = "Get Admin")
-    public ResponseModel<List<Admin>> getUser(@RequestBody Admin request) {
+    public ResponseModel<List<Admin>> getUser(@RequestBody RequestModel request) {
 	return adminBAO.getAdminAll();
     }
 

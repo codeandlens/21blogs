@@ -45,6 +45,43 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "getAdminList",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"criteria\": {\r\n        \r\n    },\r\n    \"page\": 0,\r\n    \"size\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{admin-Url}}/api/getAdmin",
+							"host": [
+								"{{admin-Url}}"
+							],
+							"path": [
+								"api",
+								"getAdmin"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -130,6 +167,154 @@
 							"path": [
 								"api",
 								"createCustomer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateCustomer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenLogin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"criteria\": {\r\n    \"email\": \"woottipongs@gmail.com\",\r\n    \"firstName\": \"Woottipong\",\r\n    \"gender\": \"Male\",\r\n    \"id\": 1,\r\n    \"lastName\": \"Saowayong\",\r\n    \"nickName\": \"Chivas\",\r\n    \"note\": \"REMARK\",\r\n    \"password\": 123456,\r\n    \"photo\": \"BASE64\",\r\n    \"status\": \"Active\",\r\n    \"telNo\": \"0825555555\",\r\n    \"username\": \"Woottipong.s\"\r\n  },\r\n  \"page\": 0,\r\n  \"size\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{customer-Url}}/api/createCustomer",
+							"host": [
+								"{{customer-Url}}"
+							],
+							"path": [
+								"api",
+								"createCustomer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenLogin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"criteria\": {\r\n    \"id\": 1\r\n  },\r\n  \"page\": 0,\r\n  \"size\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{customer-Url}}/api/deleteById",
+							"host": [
+								"{{customer-Url}}"
+							],
+							"path": [
+								"api",
+								"deleteById"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCustomerById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenLogin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"criteria\": {\r\n    \"id\": 1\r\n  },\r\n  \"page\": 0,\r\n  \"size\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{customer-Url}}/api/getById",
+							"host": [
+								"{{customer-Url}}"
+							],
+							"path": [
+								"api",
+								"getById"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "searchCustomer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenLogin}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"criteria\": {\r\n    \"searchText\": \"\"\r\n  },\r\n  \"page\": 0,\r\n  \"size\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{customer-Url}}/api/search",
+							"host": [
+								"{{customer-Url}}"
+							],
+							"path": [
+								"api",
+								"search"
 							]
 						}
 					},
